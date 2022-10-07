@@ -10,30 +10,27 @@ on:
     - cron:  '40 * * * *'
     - cron:  '50 * * * *'
 jobs:
-  data-gather-cityscape-1:
-    name: Gather image for cityscape 1
+  data-gather:
+    name: Gather data
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 2
-      - name: Run image-gather action
+      - name: Run image-gather action for cityscape 1
         uses: ./.github/actions/image-gather
         with:
           folder: 'image-data/cityscape-1'
           url: 'http://nzmoray.co.nz/webcam/cam-image00001.jpg'
-  data-gather-landscape-1:
-    name: Gather image for seascape 1
-    if: success() || failure()
-    needs: data-gather-cityscape-1
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 2
-      - run: git pull
-      - name: Run image-gather action
+      - name: Run image-gather action for seascape 1
+        if: success() || failure()
         uses: ./.github/actions/image-gather
         with:
           folder: 'image-data/seascape-1'
           url: 'https://www.wickednetworks.co.nz/webcams/current-stclair.jpg'
+      - name: Commit file
+        if: success() || failure()
+        uses: EndBug/add-and-commit@v9
+        with:
+          default_author: github_actions
+          message: 'Automated commit by image-gather action'
