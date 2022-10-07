@@ -10,47 +10,30 @@ on:
     - cron:  '40 * * * *'
     - cron:  '50 * * * *'
 jobs:
-  data-gather-cityscape:
-    name: Gather data for cityscape 1
+  data-gather-cityscape-1:
+    name: Gather image for cityscape 1
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 2
-      - name: Set file name
-        id: filename
-        run: echo "::set-output name=filename::$(date +'%Y-%m-%d-%H-%M').jpg"
-      - name: Retrieve file
-        run: |
-          cd data-folder-cityscape-1
-          curl -o ${{ steps.filename.outputs.filename }} http://nzmoray.co.nz/webcam/cam-image00001.jpg
-      - name: Validate file
-        id: validate
-        run: |
-          cd data-folder-cityscape-1
-          if ! [[ $(file -b '${{ steps.filename.outputs.filename }}') =~ JPEG ]]; then
-            rm ${{ steps.filename.outputs.filename }};
-            echo "::set-output name=is-removed::true"
-          else
-            echo "::set-output name=is-removed::false"
-          fi
-      - name: Remove duplication
-        if: (! steps.validate.outputs.is-removed) && hashFiles('$(cat data-folder-cityscape-1/head-pointer)') == hashFiles('data-folder-cityscape-1/steps.filename.outputs.filename')
-        run: |
-          echo 0
-          cd data-folder-cityscape-1
-          if test -f '${{ steps.filename.outputs.filename }}'; then
-            rm ${{ steps.filename.outputs.filename }};
-          fi
-      - name: Update pointer
-        run: |
-          cd data-folder-cityscape-1
-          if test -f '${{ steps.filename.outputs.filename }}'; then
-            echo ${{ steps.filename.outputs.filename }} > head-pointer;
-          fi
-      - name: Commit file
-        uses: EndBug/add-and-commit@v9
+      - name: Run image-gather action
+        uses: ./.github/actions/image-gather
         with:
-          default_author: github_actions
-          add: 'data-folder-cityscape-1'
-          message: 'Automated commit'
+          folder: 'image-data/cityscape-1'
+          url: 'http://nzmoray.co.nz/webcam/cam-image00001.jpg'
+  data-gather-landscape-1:
+    name: Gather image for seascape 1
+    if: success() || failure()
+    needs: data-gather-cityscape-1
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+      - run: git pull
+      - name: Run image-gather action
+        uses: ./.github/actions/image-gather
+        with:
+          folder: 'image-data/seascape-1'
+          url: 'https://www.wickednetworks.co.nz/webcams/current-stclair.jpg'
