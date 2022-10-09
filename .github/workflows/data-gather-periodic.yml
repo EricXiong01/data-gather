@@ -3,7 +3,7 @@ run-name: Gather data periodically
 on: 
   workflow_dispatch:
   schedule:
-    - cron:  '*/15 * * * *'
+    - cron:  '* * * * *'
 jobs:
   data-gather:
     name: Gather data
