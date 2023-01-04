@@ -23,6 +23,24 @@ jobs:
         with:
           folder: 'image-data/seascape-1'
           url: 'https://www.wickednetworks.co.nz/webcams/current-stclair.jpg'
+      - name: Run image-gather action for Stanley Park Causeway
+        if: success() || failure()
+        uses: ./.github/actions/image-gather
+        with:
+          folder: 'image-data/traffic-StanleyParkCauseway'
+          url: 'https://images.drivebc.ca/bchighwaycam/pub/cameras/17.jpg'
+      - name: Run image-gather action for North end of Lions Gate Bridge
+        if: success() || failure()
+        uses: ./.github/actions/image-gather
+        with:
+          folder: 'image-data/traffic-NorthEndOfLionsGateBridge'
+          url: 'https://images.drivebc.ca/bchighwaycam/pub/cameras/18.jpg'
+      - name: Run image-gather action for Georgia St at Chilco
+        if: success() || failure()
+        uses: ./.github/actions/image-gather
+        with:
+          folder: 'image-data/traffic-GeorgiaStAtChilco'
+          url: 'https://images.drivebc.ca/bchighwaycam/pub/cameras/19.jpg'
       - name: Commit file
         if: success() || failure()
         uses: EndBug/add-and-commit@v9
